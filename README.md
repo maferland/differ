@@ -34,6 +34,10 @@ Open `http://localhost:3000`. Select two folders, click Compare.
 
 Save folder pairs as named projects for quick access later.
 
+## Support
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://buymeacoffee.com/maferland)
+
 ## License
 
 [MIT](LICENSE)
