@@ -15,8 +15,8 @@ Pick two folders, auto-match images by filename, and compare them via side-by-si
 ## Install
 
 ```sh
-git clone https://github.com/maferland/image-diff
-cd image-diff
+git clone https://github.com/maferland/diff
+cd diff
 npm install
 ```
 
