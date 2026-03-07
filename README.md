@@ -1,32 +1,39 @@
-# Image Diff
+<div align="center">
+<h1>🔍 Image Diff</h1>
 
-Compare images side-by-side with pixel-level diffing. Pick two folders, auto-match by filename, manually pair unmatched files, and compare via three modes.
+<p>Compare images side-by-side with pixel-level diffing</p>
+</div>
 
-## Features
+---
 
-- **Side-by-side** — Synchronized scroll, shared zoom, size-matched images
-- **Pixel diff** — pixelmatch-powered diffing with percentage stats
-- **Slider overlay** — Draggable handle to reveal differences
-- **Projects** — Save/restore folder pairs by name (IndexedDB + File System Access API)
-- **Auto-refresh** — Re-read folders without re-picking
+Pick two folders, auto-match images by filename, and compare them via side-by-side view, pixel diff, or slider overlay.
 
-## Tech Stack
+## Prerequisites
 
-Next.js (App Router), TypeScript, Tailwind CSS, pixelmatch, @tanstack/react-virtual
+- Chrome or Edge (requires File System Access API)
 
-## Getting Started
+## Install
 
 ```sh
+git clone https://github.com/maferland/image-diff
+cd image-diff
 npm install
+```
+
+## Usage
+
+```sh
 npm run dev
 ```
 
-Open `http://localhost:3000` in Chrome or Edge (requires File System Access API).
+Open `http://localhost:3000`. Select two folders, click Compare.
 
-## Deploy
+- **Side-by-side** — Synchronized scroll and zoom
+- **Pixel diff** — pixelmatch-powered with diff percentage
+- **Slider** — Draggable overlay to reveal differences
 
-Deployed via Vercel. Push to `main` to trigger a deploy.
+Save folder pairs as named projects for quick access later.
 
-## Browser Support
+## License
 
-Chrome and Edge only — requires the File System Access API (`showDirectoryPicker`).
+[MIT](LICENSE)
