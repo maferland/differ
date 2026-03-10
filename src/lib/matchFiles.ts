@@ -1,5 +1,9 @@
 import { ImageFile, ImagePair, UnmatchedFile } from "./types";
 
+export function makePairId(leftName: string, rightName: string): string {
+  return `${leftName}__${rightName}`;
+}
+
 export function matchFiles(
   leftFiles: ImageFile[],
   rightFiles: ImageFile[]
@@ -17,7 +21,7 @@ export function matchFiles(
     const right = rightMap.get(left.normalizedName);
     if (right) {
       pairs.push({
-        id: `${left.name}__${right.name}`,
+        id: makePairId(left.name, right.name),
         left,
         right,
       });

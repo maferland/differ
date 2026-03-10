@@ -1,6 +1,6 @@
-
 import { ProjectMeta } from "@/lib/projectStore";
 import { FolderPickerButton } from "./FolderPickerButton";
+import { Arrow, Close } from "@/components/ui/icons";
 
 interface FolderSide {
   folderName: string | null;
@@ -42,9 +42,7 @@ export function FolderPicker({
           onPick={left.pickFolder}
         />
         <div className="flex items-center text-zinc-700">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
+          <Arrow />
         </div>
         <FolderPickerButton
           label="Right"
@@ -84,9 +82,7 @@ export function FolderPicker({
                   className="text-zinc-700 opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
                   title="Delete project"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
+                  <Close size={14} />
                 </button>
               </div>
             ))}

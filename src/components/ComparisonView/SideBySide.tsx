@@ -1,5 +1,6 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { ImagePair } from "@/lib/types";
+import { useImageDimensions } from "@/hooks/useImageDimensions";
 
 export type Layout = "side-by-side" | "top-bottom";
 
@@ -31,11 +32,12 @@ export function SideBySide({ pair, leftFolder, rightFolder, layout }: SideBySide
     setZoom(0.75);
   }, [layout]);
 
-  const imgDims = useRef<{ l: { w: number; h: number }; r: { w: number; h: number } } | null>(null);
+  const urls = useMemo(() => [pair.left.objectUrl, pair.right.objectUrl], [pair.left.objectUrl, pair.right.objectUrl]);
+  const dims = useImageDimensions(urls);
 
   const recalcFit = useCallback(() => {
-    if (!imgDims.current) return;
-    const { l, r } = imgDims.current;
+    if (!dims || dims.length < 2) return;
+    const [l, r] = dims;
     const headerOffset = 120;
     const availH = window.innerHeight - headerOffset;
     const containerW = containerRef.current?.clientWidth ?? window.innerWidth - 64;
@@ -44,35 +46,15 @@ export function SideBySide({ pair, leftFolder, rightFolder, layout }: SideBySide
     const leftFitH = Math.min(maxH, (colW / l.w) * l.h);
     const rightFitH = Math.min(maxH, (colW / r.w) * r.h);
     setFitHeight(Math.min(leftFitH, rightFitH));
-  }, [layout]);
+  }, [dims, layout]);
 
   useEffect(() => {
-    const leftImg = new Image();
-    const rightImg = new Image();
-    let cancelled = false;
-
-    Promise.all([
-      new Promise<{ w: number; h: number }>((res) => {
-        leftImg.onload = () => res({ w: leftImg.naturalWidth, h: leftImg.naturalHeight });
-        leftImg.src = pair.left.objectUrl;
-      }),
-      new Promise<{ w: number; h: number }>((res) => {
-        rightImg.onload = () => res({ w: rightImg.naturalWidth, h: rightImg.naturalHeight });
-        rightImg.src = pair.right.objectUrl;
-      }),
-    ]).then(([l, r]) => {
-      if (cancelled) return;
-      imgDims.current = { l, r };
-      recalcFit();
-    });
-
-    return () => { cancelled = true; };
-  }, [pair.left.objectUrl, pair.right.objectUrl, recalcFit]);
+    recalcFit();
+  }, [recalcFit]);
 
   useEffect(() => {
-    const onResize = () => recalcFit();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener("resize", recalcFit);
+    return () => window.removeEventListener("resize", recalcFit);
   }, [recalcFit]);
 
   const syncScroll = useCallback(

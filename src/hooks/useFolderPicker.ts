@@ -30,7 +30,7 @@ async function readImageFiles(dirPath: string, cacheBust: number): Promise<Image
   return files.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export function useFolderPicker(_side: "left" | "right") {
+export function useFolderPicker() {
   const [files, setFiles] = useState<ImageFile[]>([]);
   const [folderName, setFolderName] = useState<string | null>(null);
   const [dirPath, setDirPath] = useState<string | null>(null);
@@ -44,9 +44,13 @@ export function useFolderPicker(_side: "left" | "right") {
   }, []);
 
   const pickFolder = useCallback(async () => {
-    const selected = await open({ directory: true, multiple: false });
-    if (!selected) return;
-    await loadFromPath(selected);
+    try {
+      const selected = await open({ directory: true, multiple: false });
+      if (!selected) return;
+      await loadFromPath(selected);
+    } catch {
+      // Dialog cancelled or filesystem error
+    }
   }, [loadFromPath]);
 
   const restore = useCallback(
