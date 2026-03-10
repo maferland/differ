@@ -11,8 +11,6 @@ Desktop app for comparing images side-by-side with pixel-level diffing
 
 <img src="web/screenshot.png" width="720" alt="Differ — side-by-side comparison view" />
 
-<img src="web/demo.gif" width="720" alt="Differ demo" />
-
 </div>
 
 ---
@@ -24,6 +22,10 @@ Pick two folders, auto-match images by filename, and compare them with three mod
 - **Slider** — Draggable overlay to reveal differences
 
 Save folder pairs as named projects. Session auto-restores on relaunch.
+
+<div align="center">
+<img src="web/demo.gif" width="720" alt="Differ demo — pixel diff and slider modes" />
+</div>
 
 ## Install
 
