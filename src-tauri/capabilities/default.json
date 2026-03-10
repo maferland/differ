@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicfit/tauri/refs/heads/dev/crates/tauri-utils/schema.json",
+  "identifier": "default",
+  "description": "Default capabilities for Differ",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:allow-open",
+    "fs:allow-read-dir",
+    "fs:allow-read-file",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "**/*" }]
+    }
+  ]
+}

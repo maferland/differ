@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicfit/tauri/refs/heads/dev/crates/tauri-config-schema/schema.json",
+  "productName": "Differ",
+  "version": "0.1.0",
+  "identifier": "com.maferland.differ",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Differ",
+        "width": 1400,
+        "height": 900
+      }
+    ],
+    "security": {
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": {
+          "allow": ["**/*"],
+          "deny": []
+        }
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "signingIdentity": null,
+      "minimumSystemVersion": "10.13"
+    }
+  }
+}

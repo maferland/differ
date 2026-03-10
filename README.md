@@ -1,16 +1,26 @@
 <div align="center">
-<h1>🔍 Image Diff</h1>
+<h1>Differ</h1>
 
-<p>Compare images side-by-side with pixel-level diffing</p>
+<p>Desktop app for comparing images side-by-side with pixel-level diffing</p>
+
+[![CI](https://github.com/maferland/diff/actions/workflows/ci.yml/badge.svg)](https://github.com/maferland/diff/actions/workflows/ci.yml)
+
 </div>
 
 ---
 
-Pick two folders, auto-match images by filename, and compare them via side-by-side view, pixel diff, or slider overlay.
+Pick two folders, auto-match images by filename, and compare them with three modes:
+
+- **Side-by-side** — Synchronized scroll and zoom, horizontal or vertical layout
+- **Pixel diff** — pixelmatch-powered overlay with diff percentage
+- **Slider** — Draggable overlay to reveal differences
+
+Save folder pairs as named projects. Session auto-restores on relaunch.
 
 ## Prerequisites
 
-- Chrome or Edge (requires File System Access API)
+- [Node.js](https://nodejs.org/) 20+
+- [Rust](https://www.rust-lang.org/tools/install) (latest stable)
 
 ## Install
 
@@ -20,19 +30,19 @@ cd diff
 npm install
 ```
 
-## Usage
+## Development
 
 ```sh
-npm run dev
+npm run tauri dev
 ```
 
-Open `http://localhost:3000`. Select two folders, click Compare.
+## Build
 
-- **Side-by-side** — Synchronized scroll and zoom
-- **Pixel diff** — pixelmatch-powered with diff percentage
-- **Slider** — Draggable overlay to reveal differences
+```sh
+npm run tauri build
+```
 
-Save folder pairs as named projects for quick access later.
+Produces `.app` and `.dmg` in `src-tauri/target/release/bundle/`.
 
 ## Support
 
