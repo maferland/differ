@@ -11,7 +11,7 @@ Desktop app for comparing images side-by-side with pixel-level diffing
 
 <img src="web/screenshot.png" width="720" alt="Differ — side-by-side comparison view" />
 
-https://github.com/maferland/differ/raw/refs/heads/main/web/demo.mp4
+<img src="web/demo.gif" width="720" alt="Differ demo" />
 
 </div>
 
