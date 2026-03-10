@@ -1,18 +1,16 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { ImagePair } from "@/lib/types";
 import { DiffResult, runPixelDiff } from "@/lib/pixelmatchRunner";
 
 export function useDiffCache(pairs: ImagePair[]) {
   const cache = useRef<Map<string, DiffResult>>(new Map());
-  const pending = useRef<Map<string, Promise<DiffResult>>>(new Map());
-  const prevPairsRef = useRef<ImagePair[]>([]);
+  const pending = useRef<Map<string, Promise<DiffResult | null>>>(new Map());
 
   // Clear cache when pairs change (e.g. refresh)
-  if (prevPairsRef.current !== pairs) {
+  useEffect(() => {
     cache.current.clear();
     pending.current.clear();
-    prevPairsRef.current = pairs;
-  }
+  }, [pairs]);
 
   const getDiff = useCallback(
     (pairId: string): DiffResult | null => {
@@ -40,7 +38,7 @@ export function useDiffCache(pairs: ImagePair[]) {
         })
         .catch(() => {
           pending.current.delete(pairId);
-          return null as unknown as DiffResult;
+          return null;
         });
 
       pending.current.set(pairId, promise);

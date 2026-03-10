@@ -4,6 +4,9 @@ import { DiffResult } from "@/lib/pixelmatchRunner";
 import { SideBySide, Layout } from "./SideBySide";
 import { PixelDiff } from "./PixelDiff";
 import { SliderView } from "./SliderView";
+import { ViewHeader } from "@/components/ui/ViewHeader";
+import { IconButton } from "@/components/ui/IconButton";
+import { ChevronLeft, ChevronRight, Refresh } from "@/components/ui/icons";
 
 const TABS: { mode: ComparisonMode; label: string }[] = [
   { mode: "side-by-side", label: "Side by Side" },
@@ -25,6 +28,7 @@ interface ComparisonViewProps {
   onRefresh: () => void;
   refreshing: boolean;
   cachedDiff: DiffResult | null;
+  onEnsureDiff: (pairId: string) => Promise<DiffResult | null>;
 }
 
 export function ComparisonView({
@@ -41,51 +45,26 @@ export function ComparisonView({
   onRefresh,
   refreshing,
   cachedDiff,
+  onEnsureDiff,
 }: ComparisonViewProps) {
   const [layout, setLayout] = useState<Layout>("side-by-side");
 
   return (
     <div className="flex h-screen flex-col gap-2 p-4">
       {/* Row 1: Navigation — back, project, pair nav */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onClose}
-          className="rounded-lg border border-zinc-700 p-2 transition-colors hover:bg-zinc-900"
-          title="Back to list (Esc)"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M10 3L5 8l5 5" />
-          </svg>
-        </button>
-        {projectName !== "default" && (
-          <span className="text-sm text-zinc-500">{projectName}</span>
-        )}
+      <ViewHeader projectName={projectName} onBack={onClose} backTitle="Back to list (Esc)">
         <div className="ml-auto flex items-center gap-1">
-          <button
-            onClick={() => onNavigate(-1)}
-            disabled={pairIndex <= 0}
-            className="rounded-lg border border-zinc-700 p-2 transition-colors hover:bg-zinc-900 disabled:opacity-30"
-            title="Previous pair"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10 3L5 8l5 5" />
-            </svg>
-          </button>
+          <IconButton onClick={() => onNavigate(-1)} disabled={pairIndex <= 0} title="Previous pair">
+            <ChevronLeft size={14} />
+          </IconButton>
           <span className="min-w-[4rem] text-center text-sm tabular-nums text-zinc-500">
             {pairIndex + 1} / {totalPairs}
           </span>
-          <button
-            onClick={() => onNavigate(1)}
-            disabled={pairIndex >= totalPairs - 1}
-            className="rounded-lg border border-zinc-700 p-2 transition-colors hover:bg-zinc-900 disabled:opacity-30"
-            title="Next pair"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 3l5 5-5 5" />
-            </svg>
-          </button>
+          <IconButton onClick={() => onNavigate(1)} disabled={pairIndex >= totalPairs - 1} title="Next pair">
+            <ChevronRight size={14} />
+          </IconButton>
         </div>
-      </div>
+      </ViewHeader>
 
       {/* Row 2: View controls — mode tabs, layout, refresh */}
       <div className="flex items-center gap-3">
@@ -133,27 +112,9 @@ export function ComparisonView({
             ))}
           </div>
         )}
-        <button
-          onClick={onRefresh}
-          disabled={refreshing}
-          className="rounded-lg border border-zinc-700 p-2 transition-colors hover:bg-zinc-900 disabled:opacity-50"
-          title="Refresh images"
-        >
-          <svg
-            className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 2v6h-6" />
-            <path d="M3 12a9 9 0 0115-6.7L21 8" />
-            <path d="M3 22v-6h6" />
-            <path d="M21 12a9 9 0 01-15 6.7L3 16" />
-          </svg>
-        </button>
+        <IconButton onClick={onRefresh} disabled={refreshing} title="Refresh images">
+          <Refresh className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+        </IconButton>
         <span className="ml-auto text-sm text-zinc-400">{pair.left.name}</span>
       </div>
 
@@ -161,7 +122,7 @@ export function ComparisonView({
         <SideBySide pair={pair} leftFolder={leftFolder} rightFolder={rightFolder} layout={layout} />
       )}
       {mode === "pixel-diff" && (
-        <PixelDiff pair={pair} cachedDiff={cachedDiff} />
+        <PixelDiff pair={pair} cachedDiff={cachedDiff} onEnsureDiff={onEnsureDiff} />
       )}
       {mode === "slider" && <SliderView pair={pair} />}
     </div>

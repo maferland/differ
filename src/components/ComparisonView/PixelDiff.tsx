@@ -1,35 +1,45 @@
 import { useEffect, useRef, useState } from "react";
 import { ImagePair } from "@/lib/types";
 import { DiffResult } from "@/lib/pixelmatchRunner";
-import { usePixelDiff } from "@/hooks/usePixelDiff";
+import { Spinner } from "@/components/ui/icons";
 
 interface PixelDiffProps {
   pair: ImagePair;
   cachedDiff: DiffResult | null;
+  onEnsureDiff: (pairId: string) => Promise<DiffResult | null>;
 }
 
-export function PixelDiff({ pair, cachedDiff }: PixelDiffProps) {
-  const live = usePixelDiff(
-    cachedDiff ? "" : pair.left.objectUrl,
-    cachedDiff ? "" : pair.right.objectUrl
-  );
+export function PixelDiff({ pair, cachedDiff, onEnsureDiff }: PixelDiffProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [cssSize, setCssSize] = useState<{ width: number; height: number } | null>(null);
-  const [showSpinner, setShowSpinner] = useState(true);
+  const [computing, setComputing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<DiffResult | null>(cachedDiff);
 
-  const result = cachedDiff ?? live.result;
-  const computing = !cachedDiff && live.loading;
-  const error = !cachedDiff ? live.error : null;
-
-  // Show spinner for at least 250ms to avoid flash
+  // Trigger diff computation when no cached result
   useEffect(() => {
-    setShowSpinner(true);
-    const timer = setTimeout(() => setShowSpinner(false), 250);
-    return () => clearTimeout(timer);
-  }, [pair.left.objectUrl, pair.right.objectUrl]);
+    if (cachedDiff) {
+      setResult(cachedDiff);
+      return;
+    }
+    let cancelled = false;
+    setComputing(true);
+    setError(null);
 
-  const loading = computing || showSpinner;
+    onEnsureDiff(pair.id)
+      .then((res) => {
+        if (!cancelled) setResult(res);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message);
+      })
+      .finally(() => {
+        if (!cancelled) setComputing(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [pair.id, cachedDiff, onEnsureDiff]);
 
   useEffect(() => {
     if (!result || !canvasRef.current) return;
@@ -53,12 +63,9 @@ export function PixelDiff({ pair, cachedDiff }: PixelDiffProps) {
 
   return (
     <div ref={wrapperRef} className="flex flex-1 flex-col items-center justify-center gap-4">
-      {loading && (
+      {computing && (
         <div className="flex items-center gap-2 text-zinc-400">
-          <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
+          <Spinner />
           Computing diff...
         </div>
       )}
@@ -66,12 +73,12 @@ export function PixelDiff({ pair, cachedDiff }: PixelDiffProps) {
         ref={canvasRef}
         className="rounded-lg border border-zinc-800"
         style={{
-          display: loading ? "none" : "block",
+          display: computing ? "none" : "block",
           width: cssSize?.width,
           height: cssSize?.height,
         }}
       />
-      {result && !loading && (
+      {result && !computing && (
         <div className="text-sm text-zinc-400">
           <span className="font-mono text-white">
             {result.diffPixels.toLocaleString()}

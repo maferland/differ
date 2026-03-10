@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ProjectMeta } from "@/lib/projectStore";
+import { Close } from "@/components/ui/icons";
 
 interface ProjectModalProps {
   open: boolean;
@@ -68,9 +69,7 @@ export function ProjectModal({
             onClick={onClose}
             className="text-zinc-600 transition-colors hover:text-zinc-400"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
+            <Close />
           </button>
         </div>
 
@@ -124,9 +123,7 @@ export function ProjectModal({
                     className="text-zinc-700 opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
                     title="Delete project"
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 6L6 18M6 6l12 12" />
-                    </svg>
+                    <Close size={14} />
                   </button>
                 </div>
               ))}

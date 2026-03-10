@@ -27,7 +27,11 @@ function readProjects(): ProjectMeta[] {
 }
 
 function writeProjects(projects: ProjectMeta[]) {
-  localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+  try {
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+  } catch {
+    // QuotaExceededError — storage full
+  }
 }
 
 export function saveProject(

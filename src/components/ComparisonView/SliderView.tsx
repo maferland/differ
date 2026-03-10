@@ -1,7 +1,8 @@
-
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { ImagePair } from "@/lib/types";
 import { useSlider } from "@/hooks/useSlider";
+import { useImageDimensions } from "@/hooks/useImageDimensions";
+import { useFitSize } from "@/hooks/useFitSize";
 
 interface SliderViewProps {
   pair: ImagePair;
@@ -11,36 +12,10 @@ export function SliderView({ pair }: SliderViewProps) {
   const { position, containerRef, onPointerDown, onPointerMove, onPointerUp } =
     useSlider();
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
 
-  // Compute a shared display size that fits both images within the viewport
-  useEffect(() => {
-    const leftImg = new Image();
-    const rightImg = new Image();
-    let cancelled = false;
-
-    Promise.all([
-      new Promise<{ w: number; h: number }>((res) => {
-        leftImg.onload = () => res({ w: leftImg.naturalWidth, h: leftImg.naturalHeight });
-        leftImg.src = pair.left.objectUrl;
-      }),
-      new Promise<{ w: number; h: number }>((res) => {
-        rightImg.onload = () => res({ w: rightImg.naturalWidth, h: rightImg.naturalHeight });
-        rightImg.src = pair.right.objectUrl;
-      }),
-    ]).then(([l, r]) => {
-      if (cancelled) return;
-      const maxH = window.innerHeight - 180;
-      const maxW = wrapperRef.current?.clientWidth ?? window.innerWidth - 64;
-      // Use the larger dimensions as the canvas size
-      const natW = Math.max(l.w, r.w);
-      const natH = Math.max(l.h, r.h);
-      const scale = Math.min(1, maxW / natW, maxH / natH);
-      setSize({ width: natW * scale, height: natH * scale });
-    });
-
-    return () => { cancelled = true; };
-  }, [pair.left.objectUrl, pair.right.objectUrl]);
+  const urls = [pair.left.objectUrl, pair.right.objectUrl];
+  const dims = useImageDimensions(urls);
+  const size = useFitSize(dims, { headerOffset: 180, containerRef: wrapperRef });
 
   return (
     <div ref={wrapperRef} className="flex flex-col items-center gap-4">
@@ -52,14 +27,12 @@ export function SliderView({ pair }: SliderViewProps) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       >
-        {/* Left image (bottom layer) */}
         <img
           src={pair.left.objectUrl}
           alt={pair.left.name}
           className="absolute inset-0 h-full w-full object-contain"
           draggable={false}
         />
-        {/* Right image (clipped overlay) */}
         <img
           src={pair.right.objectUrl}
           alt={pair.right.name}
@@ -67,7 +40,6 @@ export function SliderView({ pair }: SliderViewProps) {
           style={{ clipPath: `inset(0 0 0 ${position}%)` }}
           draggable={false}
         />
-        {/* Slider handle */}
         <div
           className="absolute top-0 bottom-0 w-0.5"
           style={{

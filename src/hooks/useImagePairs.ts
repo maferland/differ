@@ -1,6 +1,11 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { ImagePair, UnmatchedFile, AppPhase, ComparisonMode } from "@/lib/types";
-import { matchFiles } from "@/lib/matchFiles";
+import {
+  ImagePair,
+  UnmatchedFile,
+  AppPhase,
+  ComparisonMode,
+} from "@/lib/types";
+import { matchFiles, makePairId } from "@/lib/matchFiles";
 import {
   listProjects,
   deleteProject,
@@ -15,11 +20,12 @@ import { useFolderPicker } from "./useFolderPicker";
 import { useDiffCache } from "./useDiffCache";
 
 export function useImagePairs() {
-  const left = useFolderPicker("left");
-  const right = useFolderPicker("right");
+  const left = useFolderPicker();
+  const right = useFolderPicker();
   const [pairs, setPairs] = useState<ImagePair[]>([]);
   const [unmatched, setUnmatched] = useState<UnmatchedFile[]>([]);
   const [activePairId, setActivePairId] = useState<string | null>(null);
+  const [activeUnmatched, setActiveUnmatched] = useState<UnmatchedFile | null>(null);
   const [phase, setPhase] = useState<AppPhase>("idle");
   const [projectName, setProjectName] = useState<string>("default");
   const [projects, setProjects] = useState<ProjectMeta[]>([]);
@@ -49,10 +55,13 @@ export function useImagePairs() {
       pendingPairIndex.current = session.activePairIndex;
     }
 
-    Promise.all([
-      left.restore(session.leftPath),
-      right.restore(session.rightPath),
-    ]);
+    (async () => {
+      const [leftOk, rightOk] = await Promise.all([
+        left.restore(session.leftPath),
+        right.restore(session.rightPath),
+      ]);
+      if (!leftOk || !rightOk) setPhase("idle");
+    })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-compare when both sides have files (initial restore + file watcher updates)
@@ -167,14 +176,6 @@ export function useImagePairs() {
     clearSession();
   }, [left.reset, right.reset]);
 
-  const pickLeftFolder = useCallback(() => {
-    left.pickFolder();
-  }, [left.pickFolder]);
-
-  const pickRightFolder = useCallback(() => {
-    right.pickFolder();
-  }, [right.pickFolder]);
-
   const manualPair = useCallback(
     (leftName: string, rightName: string) => {
       const leftFile = unmatched.find(
@@ -186,7 +187,7 @@ export function useImagePairs() {
       if (!leftFile || !rightFile) return;
 
       const newPair: ImagePair = {
-        id: `${leftFile.file.name}__${rightFile.file.name}`,
+        id: makePairId(leftFile.file.name, rightFile.file.name),
         left: leftFile.file,
         right: rightFile.file,
       };
@@ -228,19 +229,27 @@ export function useImagePairs() {
 
   const openPair = useCallback((id: string) => {
     setActivePairId(id);
+    setActiveUnmatched(null);
+    setPhase("comparing");
+  }, []);
+
+  const openUnmatched = useCallback((file: UnmatchedFile) => {
+    setActiveUnmatched(file);
+    setActivePairId(null);
     setPhase("comparing");
   }, []);
 
   const closePair = useCallback(() => {
     setActivePairId(null);
+    setActiveUnmatched(null);
     setPhase("pairing");
   }, []);
 
   const canCompare = left.files.length > 0 && right.files.length > 0;
 
   return {
-    left: { ...left, pickFolder: pickLeftFolder },
-    right: { ...right, pickFolder: pickRightFolder },
+    left,
+    right,
     pairs,
     unmatched,
     activePair,
@@ -262,7 +271,9 @@ export function useImagePairs() {
     manualPair,
     removePair,
     openPair,
+    openUnmatched,
     closePair,
+    activeUnmatched,
     getDiff,
     ensureDiff,
   };
