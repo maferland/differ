@@ -30,11 +30,11 @@ export function PairList({
   });
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4 p-8">
+    <div className="mx-auto flex h-full max-w-3xl flex-col gap-4 p-8">
       <h2 className="text-xl font-bold">
         Matched Pairs ({pairs.length})
       </h2>
-      <div ref={parentRef} className="max-h-[60vh] overflow-auto pr-2">
+      <div ref={parentRef} className="flex-1 overflow-auto pr-2">
         <div
           style={{ height: virtualizer.getTotalSize(), position: "relative" }}
         >

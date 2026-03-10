@@ -105,7 +105,7 @@ export function App() {
 
   if (phase === "pairing") {
     return (
-      <div>
+      <div className="flex h-screen flex-col">
         <div className="flex items-center gap-3 p-4 pb-0">
           <button
             onClick={newProject}
