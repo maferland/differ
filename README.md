@@ -1,9 +1,17 @@
 <div align="center">
-<h1>Differ</h1>
 
-<p>Desktop app for comparing images side-by-side with pixel-level diffing</p>
+<img src="src-tauri/icons/icon.png" width="128" height="128" alt="Differ icon" />
 
-[![CI](https://github.com/maferland/diff/actions/workflows/ci.yml/badge.svg)](https://github.com/maferland/diff/actions/workflows/ci.yml)
+# Differ
+
+Desktop app for comparing images side-by-side with pixel-level diffing
+
+[![CI](https://github.com/maferland/differ/actions/workflows/ci.yml/badge.svg)](https://github.com/maferland/differ/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/maferland/differ)](https://github.com/maferland/differ/releases/latest)
+
+<img src="web/screenshot.png" width="720" alt="Differ — side-by-side comparison view" />
+
+https://github.com/user-attachments/assets/differ-demo.mp4
 
 </div>
 
@@ -17,26 +25,29 @@ Pick two folders, auto-match images by filename, and compare them with three mod
 
 Save folder pairs as named projects. Session auto-restores on relaunch.
 
-## Prerequisites
+## Install
+
+```sh
+brew install maferland/tap/differ
+```
+
+Or download the `.dmg` from [Releases](https://github.com/maferland/differ/releases/latest).
+
+## Development
+
+### Prerequisites
 
 - [Node.js](https://nodejs.org/) 20+
 - [Rust](https://www.rust-lang.org/tools/install) (latest stable)
 
-## Install
-
 ```sh
-git clone https://github.com/maferland/diff
-cd diff
+git clone https://github.com/maferland/differ
+cd differ
 npm install
-```
-
-## Development
-
-```sh
 npm run tauri dev
 ```
 
-## Build
+### Build
 
 ```sh
 npm run tauri build
