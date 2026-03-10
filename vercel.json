@@ -1,5 +1,4 @@
 {
   "buildCommand": "",
-  "outputDirectory": "web",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- web/"
+  "outputDirectory": "web"
 }
