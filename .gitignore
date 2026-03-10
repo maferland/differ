@@ -10,7 +10,6 @@
 *.pem
 .vercel
 .playwright-mcp/
-/web/screenshot.png
 
 # debug
 npm-debug.log*
