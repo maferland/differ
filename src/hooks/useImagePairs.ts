@@ -110,11 +110,13 @@ export function useImagePairs() {
       setActivePairId(null);
       setPairs([]);
       setUnmatched([]);
-      setPhase("idle");
-      await Promise.all([
+      const [leftOk, rightOk] = await Promise.all([
         left.restore(project.leftPath),
         right.restore(project.rightPath),
       ]);
+      if (!leftOk || !rightOk) {
+        setPhase("idle");
+      }
     },
     [left.restore, right.restore]
   );
